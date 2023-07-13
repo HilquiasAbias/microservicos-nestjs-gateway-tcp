@@ -18,20 +18,20 @@ AppModule = __decorate([
         imports: [
             microservices_1.ClientsModule.register([
                 {
-                    name: "PROJECTS",
-                    transport: microservices_1.Transport.TCP,
+                    name: 'PROJECTS',
+                    transport: microservices_1.Transport.RMQ,
                     options: {
-                        host: "127.0.0.1",
-                        port: 8888
-                    }
+                        urls: ['amqp://localhost:5672'],
+                        queue: 'projects_queue',
+                    },
                 },
                 {
                     name: "DOCUMENTS",
-                    transport: microservices_1.Transport.TCP,
+                    transport: microservices_1.Transport.RMQ,
                     options: {
-                        host: "127.0.0.1",
-                        port: 8889
-                    }
+                        urls: ['amqp://localhost:5672'],
+                        queue: 'documents_queue',
+                    },
                 }
             ])
         ],

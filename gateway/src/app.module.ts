@@ -7,20 +7,20 @@ import { AppService } from './app.service';
   imports: [
     ClientsModule.register([
       {
-        name: "PROJECTS",
-        transport: Transport.TCP,
+        name: 'PROJECTS',
+        transport: Transport.RMQ,
         options: {
-          host: "127.0.0.1",
-          port: 8888
-        }
+          urls: ['amqp://localhost:5672'],
+          queue: 'projects_queue',
+        },
       },
       {
         name: "DOCUMENTS",
-        transport: Transport.TCP,
+        transport: Transport.RMQ,
         options: {
-          host: "127.0.0.1",
-          port: 8889
-        }
+          urls: ['amqp://localhost:5672'],
+          queue: 'documents_queue',
+        },
       }
     ])
   ],

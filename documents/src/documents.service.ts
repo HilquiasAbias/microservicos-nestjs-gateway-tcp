@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateDocumentDto } from './dtos/create-document.dto';
 import { UpdateDocumentDto } from './dtos/update-document.dto';
 import { PrismaClient } from '@prisma/client';
+
 @Injectable()
 export class DocumentsService {
   constructor(private prisma: PrismaClient) {}
@@ -33,23 +34,20 @@ export class DocumentsService {
   }
 
   async findOne(id: string) {
-    const project = await this.prisma.document.findFirst({
-      where: { id }
-    });
+    const document = await this.prisma.document.findUnique({ where: { id } });
 
-    if (!project) {
-      throw new HttpException('documento não encontrado', HttpStatus.NOT_FOUND);
+    if (!document) {
+      throw new HttpException('Documento não encontrado', HttpStatus.NOT_FOUND);
     }
 
-    return project;
+    return document;
   }
 
   async update(data: UpdateDocumentDto) {
-    const project = await this.prisma.document.findFirst({
-      where: { id: data.id },
-    });
+    const { id, ...rest } = data;
+    const document = await this.prisma.document.findUnique({ where: { id } });
 
-    if (!project) {
+    if (!document) {
       throw new HttpException(
         'Nenhum documento encontrado',
         HttpStatus.NOT_FOUND,
@@ -58,8 +56,8 @@ export class DocumentsService {
 
     try {
       return await this.prisma.document.update({
-        data,
-        where: { id: data.id },
+        where: { id },
+        data: rest,
       });
     } catch (error) {
       throw new HttpException(
@@ -70,23 +68,17 @@ export class DocumentsService {
   }
 
   async remove(id: string) {
-    const project = await this.prisma.document.findFirst({
-      where: { id },
-    });
+    const document = await this.prisma.document.findUnique({ where: { id } });
 
-    if (!project) {
-      throw new HttpException('documento não encontrado', HttpStatus.NOT_FOUND);
+    if (!document) {
+      throw new HttpException('Documento não encontrado', HttpStatus.NOT_FOUND);
     }
 
     try {
-      return await this.prisma.document.delete({
-        where: {
-          id,
-        },
-      });
+      return await this.prisma.document.delete({ where: { id } });
     } catch (error) {
       throw new HttpException(
-        'Falha ao remover documento.',
+        'Falha ao remover documento',
         HttpStatus.FORBIDDEN,
       );
     }

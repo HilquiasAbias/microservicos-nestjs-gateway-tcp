@@ -4,10 +4,13 @@ import { ProjectsModule } from "./projects.module";
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice(ProjectsModule, {
-    transport: Transport.TCP,
+    transport: Transport.RMQ,
     options: {
-      host: "127.0.0.1",
-      port: 8888
+      urls: ['amqp://localhost:5672'],
+      queue: 'projects_queue',
+      queueOptions: {
+        durable: true,
+      },
     }
   });
   app.listen();

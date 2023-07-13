@@ -8,6 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocumentsService = void 0;
 const common_1 = require("@nestjs/common");
@@ -38,25 +49,22 @@ let DocumentsService = class DocumentsService {
         }
     }
     async findOne(id) {
-        const project = await this.prisma.document.findFirst({
-            where: { id }
-        });
-        if (!project) {
-            throw new common_1.HttpException('documento não encontrado', common_1.HttpStatus.NOT_FOUND);
+        const document = await this.prisma.document.findUnique({ where: { id } });
+        if (!document) {
+            throw new common_1.HttpException('Documento não encontrado', common_1.HttpStatus.NOT_FOUND);
         }
-        return project;
+        return document;
     }
     async update(data) {
-        const project = await this.prisma.document.findFirst({
-            where: { id: data.id },
-        });
-        if (!project) {
+        const { id } = data, rest = __rest(data, ["id"]);
+        const document = await this.prisma.document.findUnique({ where: { id } });
+        if (!document) {
             throw new common_1.HttpException('Nenhum documento encontrado', common_1.HttpStatus.NOT_FOUND);
         }
         try {
             return await this.prisma.document.update({
-                data,
-                where: { id: data.id },
+                where: { id },
+                data: rest,
             });
         }
         catch (error) {
@@ -64,21 +72,15 @@ let DocumentsService = class DocumentsService {
         }
     }
     async remove(id) {
-        const project = await this.prisma.document.findFirst({
-            where: { id },
-        });
-        if (!project) {
-            throw new common_1.HttpException('documento não encontrado', common_1.HttpStatus.NOT_FOUND);
+        const document = await this.prisma.document.findUnique({ where: { id } });
+        if (!document) {
+            throw new common_1.HttpException('Documento não encontrado', common_1.HttpStatus.NOT_FOUND);
         }
         try {
-            return await this.prisma.document.delete({
-                where: {
-                    id,
-                },
-            });
+            return await this.prisma.document.delete({ where: { id } });
         }
         catch (error) {
-            throw new common_1.HttpException('Falha ao remover documento.', common_1.HttpStatus.FORBIDDEN);
+            throw new common_1.HttpException('Falha ao remover documento', common_1.HttpStatus.FORBIDDEN);
         }
     }
 };

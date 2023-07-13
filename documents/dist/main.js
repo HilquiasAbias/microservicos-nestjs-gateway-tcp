@@ -5,10 +5,13 @@ const microservices_1 = require("@nestjs/microservices");
 const documents_module_1 = require("./documents.module");
 async function bootstrap() {
     const app = await core_1.NestFactory.createMicroservice(documents_module_1.DocumentsModule, {
-        transport: microservices_1.Transport.TCP,
+        transport: microservices_1.Transport.RMQ,
         options: {
-            host: "127.0.0.1",
-            port: 8889
+            urls: ['amqp://localhost:5672'],
+            queue: 'documents_queue',
+            queueOptions: {
+                durable: true,
+            },
         }
     });
     app.listen();
